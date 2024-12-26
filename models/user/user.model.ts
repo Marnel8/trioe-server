@@ -1,15 +1,15 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  CreatedAt,
-  UpdatedAt,
-  BeforeCreate,
-  HasMany,
-  BeforeUpdate,
+	Table,
+	Column,
+	Model,
+	DataType,
+	CreatedAt,
+	UpdatedAt,
+	BeforeCreate,
+	HasMany,
+	BeforeUpdate,
 } from "sequelize-typescript";
 import { Gender, UserRole, UserType } from "./userEnums";
 import Project from "../projects/projects.model";
@@ -17,96 +17,99 @@ import Project from "../projects/projects.model";
 const emailRegexPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 @Table({
-  tableName: "users",
-  timestamps: true,
-  modelName: "User",
+	tableName: "users",
+	timestamps: true,
+	modelName: "User",
 })
 export default class User extends Model {
-  @Column({
-    type: DataType.UUID,
-    primaryKey: true,
-    defaultValue: DataType.UUIDV4,
-  })
-  declare id: string;
+	@Column({
+		type: DataType.UUID,
+		primaryKey: true,
+		defaultValue: DataType.UUIDV4,
+	})
+	declare id: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  declare firstName: string;
+	@Column({ type: DataType.STRING, allowNull: false })
+	declare firstName: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  declare lastName: string;
+	@Column({ type: DataType.STRING, allowNull: false })
+	declare lastName: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  declare email: string;
+	@Column({
+		type: DataType.STRING,
+		allowNull: false,
+	})
+	declare email: string;
 
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  declare age: number;
+	@Column({ type: DataType.INTEGER, allowNull: true })
+	declare age: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  declare contactNumber: string;
+	@Column({ type: DataType.STRING, allowNull: false })
+	declare contactNumber: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  declare password: string;
+	@Column({ type: DataType.STRING, allowNull: false })
+	declare password: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    defaultValue: UserRole.USER,
-  })
-  declare role: UserRole;
+	@Column({
+		type: DataType.STRING,
+		allowNull: false,
+		defaultValue: UserRole.USER,
+	})
+	declare role: UserRole;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  declare type: UserType;
+	@Column({ type: DataType.STRING, allowNull: false })
+	declare type: UserType;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  declare gender: Gender;
+	@Column({ type: DataType.STRING, allowNull: false })
+	declare gender: Gender;
 
-  @HasMany(() => Project)
-  declare projects: Project[];
+	@Column({ type: DataType.STRING, allowNull: true })
+	declare avatar: string;
 
-  @CreatedAt
-  declare createdAt: Date;
+	@HasMany(() => Project)
+	declare projects: Project[];
 
-  @UpdatedAt
-  declare updatedAt: Date;
+	@CreatedAt
+	declare createdAt: Date;
 
-  @BeforeCreate
-  static hashPassword(instance: User) {
-    instance.password = bcrypt.hashSync(instance.password, 10);
-  }
+	@UpdatedAt
+	declare updatedAt: Date;
 
-  @BeforeUpdate
-  static hashPasswordOnUpdate(instance: User) {
-    instance.password = bcrypt.hashSync(instance.password, 10);
-  }
+	@BeforeCreate
+	static hashPassword(instance: User) {
+		instance.password = bcrypt.hashSync(instance.password, 10);
+	}
 
-  public SignAccessToken(): string {
-    return jwt.sign(
-      {
-        id: this.id,
-      },
-      process.env.ACCESS_TOKEN_SECRET || "",
-      {
-        expiresIn: "1h",
-      }
-    );
-  }
+	@BeforeUpdate
+	static hashPasswordOnUpdate(instance: User) {
+		instance.password = bcrypt.hashSync(instance.password, 10);
+	}
 
-  public SignRefreshToken(): string {
-    return jwt.sign(
-      {
-        id: this.id,
-      },
-      process.env.REFRESH_TOKEN_SECRET || "",
-      {
-        expiresIn: "3d",
-      }
-    );
-  }
+	public SignAccessToken(): string {
+		return jwt.sign(
+			{
+				id: this.id,
+			},
+			process.env.ACCESS_TOKEN_SECRET || "",
+			{
+				expiresIn: "1h",
+			}
+		);
+	}
 
-  public comparePassword = async (enteredPassword: string) => {
-    return await bcrypt.compare(enteredPassword, this.password);
-  };
+	public SignRefreshToken(): string {
+		return jwt.sign(
+			{
+				id: this.id,
+			},
+			process.env.REFRESH_TOKEN_SECRET || "",
+			{
+				expiresIn: "3d",
+			}
+		);
+	}
+
+	public comparePassword = async (enteredPassword: string) => {
+		return await bcrypt.compare(enteredPassword, this.password);
+	};
 }

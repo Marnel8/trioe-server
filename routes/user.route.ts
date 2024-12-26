@@ -1,17 +1,18 @@
 import { Router } from "express";
 import {
-  register,
-  login,
-  logout,
-  getUserDetails,
-  activateUser,
+	register,
+	login,
+	logout,
+	getUserDetails,
+	activateUser,
 } from "../controllers/user.controller";
 import { isAuthenticated } from "../middleware/auth";
+import upload from "../utils/uploader";
 
 const router = Router();
 
 // post routes
-router.post("/register", register);
+router.post("/register", upload.single("avatar"), register);
 router.post("/activate-user", activateUser);
 router.post("/", login);
 

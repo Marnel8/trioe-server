@@ -11,165 +11,170 @@ import { createUser, findUserByEmail, getCurrentUser } from "../data/user";
 import jwt from "jsonwebtoken";
 
 export const register = catchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      type,
-      gender,
-      age,
-      contactNumber,
-    } = req.body;
+	async (req: Request, res: Response, next: NextFunction) => {
+		const {
+			firstName,
+			lastName,
+			email,
+			password,
+			type,
+			gender,
+			age,
+			contactNumber,
+		} = req.body;
 
-    try {
-      const user = {
-        firstName,
-        lastName,
-        email,
-        password,
-        age,
-        type,
-        gender,
-        contactNumber,
-      };
+		const avatar = req.file?.filename;
 
-      const userExists = await findUserByEmail(email);
+		try {
+			const user = {
+				firstName,
+				lastName,
+				email,
+				password,
+				age,
+				type,
+				gender,
+				contactNumber,
+				avatar,
+			};
 
-      if (userExists instanceof ErrorHandler) {
-        if (userExists.statusCode !== 404) {
-          return next();
-        }
-      } else {
-        return next(new ErrorHandler("Email is already taken", 400));
-      }
+			const userExists = await findUserByEmail(email);
 
-      const activationToken = createActivationToken(user);
-      const activationCode = activationToken.activationCode;
-      const data = { user, activationCode };
+			if (userExists instanceof ErrorHandler) {
+				if (userExists.statusCode !== 404) {
+					return next();
+				}
+			} else {
+				return next(new ErrorHandler("Email is already taken", 400));
+			}
 
-      await sendMail({
-        email: user.email,
-        subject: "Activate your account",
-        template: "activation-mail.ejs",
-        data,
-        attachments: [
-          {
-            filename: "logo.png",
-            path: path.join(__dirname, "../assets/logo.png"),
-            cid: "logo",
-          },
-        ],
-      });
+			const activationToken = createActivationToken(user);
+			const activationCode = activationToken.activationCode;
+			const data = { user, activationCode };
 
-      res.status(201).json({
-        success: true,
-        message: `Please check your email: ${user.email} to activate your account`,
-        activationToken: activationToken.token,
-      });
-    } catch (error) {
-      return next(new ErrorHandler("Failed to send activation email", 500));
-    }
-  }
+			await sendMail({
+				email: user.email,
+				subject: "Activate your account",
+				template: "activation-mail.ejs",
+				data,
+				attachments: [
+					{
+						filename: "logo.png",
+						path: path.join(__dirname, "../assets/logo.png"),
+						cid: "logo",
+					},
+				],
+			});
+
+			res.status(201).json({
+				success: true,
+				message: `Please check your email: ${user.email} to activate your account`,
+				activationToken: activationToken.token,
+			});
+		} catch (error) {
+			return next(new ErrorHandler("Failed to send activation email", 500));
+		}
+	}
 );
 
 export const activateUser = catchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { activation_token, activation_code } =
-        req.body as IActivationRequest;
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { activation_token, activation_code } =
+				req.body as IActivationRequest;
 
-      const newUser: { user: User; activationCode: string } = jwt.verify(
-        activation_token,
-        process.env.ACTIVATION_SECRET as string
-      ) as { user: User; activationCode: string };
+			const newUser: { user: User; activationCode: string } = jwt.verify(
+				activation_token,
+				process.env.ACTIVATION_SECRET as string
+			) as { user: User; activationCode: string };
 
-      if (newUser.activationCode !== activation_code) {
-        return next(new ErrorHandler("Invalid activation code", 400));
-      }
+			if (newUser.activationCode !== activation_code) {
+				return next(new ErrorHandler("Invalid activation code", 400));
+			}
 
-      const {
-        firstName,
-        lastName,
-        contactNumber,
-        email,
-        age,
-        password,
-        type,
-        gender,
-      } = newUser.user;
+			const {
+				firstName,
+				lastName,
+				contactNumber,
+				email,
+				age,
+				password,
+				type,
+				gender,
+				avatar,
+			} = newUser.user;
 
-      const user = await createUser({
-        firstName,
-        lastName,
-        contactNumber,
-        email,
-        password,
-        type,
-        age,
-        gender,
-      });
+			const user = await createUser({
+				firstName,
+				lastName,
+				contactNumber,
+				email,
+				password,
+				type,
+				age,
+				gender,
+				avatar,
+			});
 
-      if (user instanceof ErrorHandler) {
-        return next(new ErrorHandler(user.message, user.statusCode));
-      }
+			if (user instanceof ErrorHandler) {
+				return next(new ErrorHandler(user.message, user.statusCode));
+			}
 
-      res.status(201).json(user);
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
-    }
-  }
+			res.status(201).json(user);
+		} catch (error: any) {
+			return next(new ErrorHandler(error.message, 400));
+		}
+	}
 );
 
 export const login = catchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password } = req.body;
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { email, password } = req.body;
 
-    const userResult = await findUserByEmail(email);
+		const userResult = await findUserByEmail(email);
 
-    if (userResult instanceof ErrorHandler || !userResult) {
-      return next(new ErrorHandler("User not found", 404));
-    }
+		if (userResult instanceof ErrorHandler || !userResult) {
+			return next(new ErrorHandler("User not found", 404));
+		}
 
-    const isPasswordMatch = await userResult.comparePassword(password);
+		const isPasswordMatch = await userResult.comparePassword(password);
 
-    if (!isPasswordMatch) {
-      return next(new ErrorHandler("Invalid password", 400));
-    }
+		if (!isPasswordMatch) {
+			return next(new ErrorHandler("Invalid password", 400));
+		}
 
-    sendToken(userResult, 200, res);
-  }
+		sendToken(userResult, 200, res);
+	}
 );
 
 export const logout = catchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      res.clearCookie("access_token");
-      res.clearCookie("refresh_token");
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			res.clearCookie("access_token");
+			res.clearCookie("refresh_token");
 
-      res.status(200).json({
-        success: true,
-        message: "Logged out succesfully",
-      });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  }
+			res.status(200).json({
+				success: true,
+				message: "Logged out succesfully",
+			});
+		} catch (error: any) {
+			return next(new ErrorHandler(error.message, 500));
+		}
+	}
 );
 
 export const getUserDetails = catchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const user = await getCurrentUser(req);
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const user = await getCurrentUser(req);
 
-      if (!user) {
-        return next(new ErrorHandler("User not found", 404));
-      }
+			if (!user) {
+				return next(new ErrorHandler("User not found", 404));
+			}
 
-      res.status(200).json(user);
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  }
+			res.status(200).json(user);
+		} catch (error: any) {
+			return next(new ErrorHandler(error.message, 500));
+		}
+	}
 );
