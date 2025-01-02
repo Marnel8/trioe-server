@@ -10,7 +10,7 @@ import {
 @Table({
 	tableName: "quotation_req",
 	timestamps: true,
-	modelName: "RFQ",
+	modelName: "QuotationReq",
 })
 export class QuotationReq extends Model {
 	@Column({
@@ -39,7 +39,7 @@ export class QuotationReq extends Model {
 	declare email: string;
 
 	@Column({
-		type: DataType.NUMBER,
+		type: DataType.INTEGER,
 		allowNull: true,
 	})
 	declare contactNumber: string;
@@ -57,10 +57,16 @@ export class QuotationReq extends Model {
 	declare additionalRequirements: string;
 
 	@Column({
-		type: DataType.NUMBER,
+		type: DataType.INTEGER,
 		allowNull: false,
 	})
 	declare quantity: number;
+
+	@Column({
+		type: DataType.STRING,
+		allowNull: false,
+	})
+	declare kitName: string;
 
 	@CreatedAt
 	declare createdAt: Date;
