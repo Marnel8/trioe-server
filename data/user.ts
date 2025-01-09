@@ -13,8 +13,8 @@ export const createUser = async (userData: CreateUserParams) => {
 		age: userData.age,
 		type: userData.type,
 		gender: userData.gender,
-		avatar: userData.avatar,
-	});
+		avatar: userData?.avatar || "",
+	} as User);
 
 	if (!user) {
 		return new ErrorHandler("Failed to create user", 500);

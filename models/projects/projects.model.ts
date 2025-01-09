@@ -18,7 +18,7 @@ import ProjectLike from "./projectLikes";
 	timestamps: true,
 	modelName: "Project",
 })
-export class Project extends Model {
+export class Project extends Model<Project | any> {
 	@Column({
 		type: DataType.UUID,
 		primaryKey: true,

@@ -24,7 +24,7 @@ export type CreateUserParams = {
 	password: string;
 	type: UserType;
 	gender: Gender;
-	avatar?: string;
+	avatar?: string | undefined;
 };
 
 export type FindUserParams = {

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -12,9 +21,10 @@ const user_service_1 = require("../services/user.service");
 const errorHandler_1 = __importDefault(require("../utils/errorHandler"));
 const user_1 = require("../data/user");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-exports.register = (0, catchAsyncError_1.default)(async (req, res, next) => {
+exports.register = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { firstName, lastName, email, password, type, gender, age, contactNumber, } = req.body;
-    const avatar = req.file?.filename;
+    const avatar = (_a = req.file) === null || _a === void 0 ? void 0 : _a.filename;
     try {
         const user = {
             firstName,
@@ -27,7 +37,7 @@ exports.register = (0, catchAsyncError_1.default)(async (req, res, next) => {
             contactNumber,
             avatar,
         };
-        const userExists = await (0, user_1.findUserByEmail)(email);
+        const userExists = yield (0, user_1.findUserByEmail)(email);
         if (userExists instanceof errorHandler_1.default) {
             if (userExists.statusCode !== 404) {
                 return next();
@@ -39,7 +49,7 @@ exports.register = (0, catchAsyncError_1.default)(async (req, res, next) => {
         const activationToken = (0, user_service_1.createActivationToken)(user);
         const activationCode = activationToken.activationCode;
         const data = { user, activationCode };
-        await (0, sendMail_1.default)({
+        yield (0, sendMail_1.default)({
             email: user.email,
             subject: "Activate your account",
             template: "activation-mail.ejs",
@@ -61,8 +71,8 @@ exports.register = (0, catchAsyncError_1.default)(async (req, res, next) => {
     catch (error) {
         return next(new errorHandler_1.default("Failed to send activation email", 500));
     }
-});
-exports.activateUser = (0, catchAsyncError_1.default)(async (req, res, next) => {
+}));
+exports.activateUser = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { activation_token, activation_code } = req.body;
         const newUser = jsonwebtoken_1.default.verify(activation_token, process.env.ACTIVATION_SECRET);
@@ -70,7 +80,7 @@ exports.activateUser = (0, catchAsyncError_1.default)(async (req, res, next) => 
             return next(new errorHandler_1.default("Invalid activation code", 400));
         }
         const { firstName, lastName, contactNumber, email, age, password, type, gender, avatar, } = newUser.user;
-        const user = await (0, user_1.createUser)({
+        const user = yield (0, user_1.createUser)({
             firstName,
             lastName,
             contactNumber,
@@ -89,20 +99,20 @@ exports.activateUser = (0, catchAsyncError_1.default)(async (req, res, next) => 
     catch (error) {
         return next(new errorHandler_1.default(error.message, 400));
     }
-});
-exports.login = (0, catchAsyncError_1.default)(async (req, res, next) => {
+}));
+exports.login = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    const userResult = await (0, user_1.findUserByEmail)(email);
+    const userResult = yield (0, user_1.findUserByEmail)(email);
     if (userResult instanceof errorHandler_1.default || !userResult) {
         return next(new errorHandler_1.default("User not found", 404));
     }
-    const isPasswordMatch = await userResult.comparePassword(password);
+    const isPasswordMatch = yield userResult.comparePassword(password);
     if (!isPasswordMatch) {
         return next(new errorHandler_1.default("Invalid password", 400));
     }
     (0, jwt_1.sendToken)(userResult, 200, res);
-});
-exports.logout = (0, catchAsyncError_1.default)(async (req, res, next) => {
+}));
+exports.logout = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.clearCookie("access_token");
         res.clearCookie("refresh_token");
@@ -114,10 +124,10 @@ exports.logout = (0, catchAsyncError_1.default)(async (req, res, next) => {
     catch (error) {
         return next(new errorHandler_1.default(error.message, 500));
     }
-});
-exports.getUserDetails = (0, catchAsyncError_1.default)(async (req, res, next) => {
+}));
+exports.getUserDetails = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = await (0, user_1.getCurrentUser)(req);
+        const user = yield (0, user_1.getCurrentUser)(req);
         if (!user) {
             return next(new errorHandler_1.default("User not found", 404));
         }
@@ -126,4 +136,4 @@ exports.getUserDetails = (0, catchAsyncError_1.default)(async (req, res, next) =
     catch (error) {
         return next(new errorHandler_1.default(error.message, 500));
     }
-});
+}));

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,9 +18,9 @@ const projects_model_1 = __importDefault(require("../models/projects/projects.mo
 const instructions_1 = require("../models/projects/instructions");
 const user_model_1 = __importDefault(require("../models/user/user.model"));
 const projectLikes_1 = __importDefault(require("../models/projects/projectLikes"));
-const getProjectsData = async () => {
+const getProjectsData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const projects = await projects_model_1.default.findAll({
+        const projects = yield projects_model_1.default.findAll({
             order: [["createdAt", "DESC"]],
             include: [
                 { model: instructions_1.ProjectInstructions, as: "instructions" },
@@ -31,12 +40,12 @@ const getProjectsData = async () => {
     catch (error) {
         return new errorHandler_1.default(error.message, 500);
     }
-};
+});
 exports.getProjectsData = getProjectsData;
-const createProjectData = async (projectData) => {
+const createProjectData = (projectData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Create base project
-        const project = await projects_model_1.default.create({
+        const project = yield projects_model_1.default.create({
             title: projectData.title,
             category: projectData.category,
             description: projectData.description,
@@ -56,9 +65,9 @@ const createProjectData = async (projectData) => {
             projectId: project.id,
         }));
         // Create instructions
-        const createdInstructions = await instructions_1.ProjectInstructions.bulkCreate(instructions);
+        const createdInstructions = yield instructions_1.ProjectInstructions.bulkCreate(instructions);
         // Fetch complete project with instructions
-        const completeProject = await projects_model_1.default.findOne({
+        const completeProject = yield projects_model_1.default.findOne({
             where: { id: project.id },
             include: [
                 {
@@ -73,11 +82,11 @@ const createProjectData = async (projectData) => {
         console.error("Data layer error:", error);
         return new errorHandler_1.default(error.message, 500);
     }
-};
+});
 exports.createProjectData = createProjectData;
-const getProjectsByUserIdData = async (userId) => {
+const getProjectsByUserIdData = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const projects = await projects_model_1.default.findAll({
+        const projects = yield projects_model_1.default.findAll({
             where: {
                 authorId: userId,
             },
@@ -90,11 +99,12 @@ const getProjectsByUserIdData = async (userId) => {
     catch (error) {
         return new errorHandler_1.default(error.message, 500);
     }
-};
+});
 exports.getProjectsByUserIdData = getProjectsByUserIdData;
-const updateProjectData = async (projectId, projectData) => {
+const updateProjectData = (projectId, projectData) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const updatedCount = await projects_model_1.default.update(projectData, {
+        const updatedCount = yield projects_model_1.default.update(projectData, {
             where: {
                 id: projectId,
             },
@@ -104,7 +114,7 @@ const updateProjectData = async (projectId, projectData) => {
             return new errorHandler_1.default("Project not found", 404);
         }
         // Fetch the updated project
-        const updatedProject = await projects_model_1.default.findOne({
+        const updatedProject = yield projects_model_1.default.findOne({
             where: { id: projectId },
             include: [{ model: instructions_1.ProjectInstructions, as: "instructions" }],
         });
@@ -116,20 +126,20 @@ const updateProjectData = async (projectId, projectData) => {
                 if (instruction && instruction.id) {
                     console.log(updatedProject);
                     // Update existing instruction
-                    await instructions_1.ProjectInstructions.update({
+                    yield instructions_1.ProjectInstructions.update({
                         text: instruction.text,
                         imagePath: instruction.imagePath ||
-                            (await instructions_1.ProjectInstructions?.findOne({
-                                where: { id: instruction?.id },
-                            }))?.imagePath, // Retain existing image if no new image is provided
-                    }, { where: { id: instruction.id, projectId: updatedProject?.id } });
+                            ((_a = (yield (instructions_1.ProjectInstructions === null || instructions_1.ProjectInstructions === void 0 ? void 0 : instructions_1.ProjectInstructions.findOne({
+                                where: { id: instruction === null || instruction === void 0 ? void 0 : instruction.id },
+                            })))) === null || _a === void 0 ? void 0 : _a.imagePath), // Retain existing image if no new image is provided
+                    }, { where: { id: instruction.id, projectId: updatedProject === null || updatedProject === void 0 ? void 0 : updatedProject.id } });
                 }
                 else if (instruction) {
                     // Create new instruction if it doesn't exist
-                    await instructions_1.ProjectInstructions.create({
+                    yield instructions_1.ProjectInstructions.create({
                         text: instruction.text,
                         imagePath: instruction.imagePath,
-                        projectId: updatedProject?.id,
+                        projectId: updatedProject === null || updatedProject === void 0 ? void 0 : updatedProject.id,
                     });
                 }
             }
@@ -140,11 +150,11 @@ const updateProjectData = async (projectId, projectData) => {
         console.error("Data layer error during project update:", error);
         return new errorHandler_1.default(error.message, 500);
     }
-};
+});
 exports.updateProjectData = updateProjectData;
-const getProjectByIdData = async (projectId) => {
+const getProjectByIdData = (projectId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = await projects_model_1.default.findOne({
+        const project = yield projects_model_1.default.findOne({
             where: {
                 id: projectId,
             },
@@ -162,11 +172,11 @@ const getProjectByIdData = async (projectId) => {
     catch (error) {
         return new errorHandler_1.default(error.message, 500);
     }
-};
+});
 exports.getProjectByIdData = getProjectByIdData;
-const deleteProjectData = async (projectId) => {
+const deleteProjectData = (projectId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const deletedCount = await projects_model_1.default.destroy({
+        const deletedCount = yield projects_model_1.default.destroy({
             where: {
                 id: projectId,
             },
@@ -179,31 +189,31 @@ const deleteProjectData = async (projectId) => {
     catch (error) {
         return new errorHandler_1.default(error.message, 500);
     }
-};
+});
 exports.deleteProjectData = deleteProjectData;
-const likeProjectData = async (projectId, userId) => {
+const likeProjectData = (projectId, userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = await projects_model_1.default.findOne({
+        const project = yield projects_model_1.default.findOne({
             where: { id: projectId },
         });
         if (!project) {
             return new errorHandler_1.default("Project not found", 404);
         }
-        const projectLikes = await projectLikes_1.default.findAll({
+        const projectLikes = yield projectLikes_1.default.findAll({
             where: {
                 projectId: projectId,
             },
         });
         const existingLike = projectLikes.find((like) => like.userId === userId);
         if (existingLike) {
-            await projectLikes_1.default.destroy({
+            yield projectLikes_1.default.destroy({
                 where: {
                     id: existingLike.id,
                 },
             });
         }
         else {
-            await projectLikes_1.default.create({
+            yield projectLikes_1.default.create({
                 projectId: projectId,
                 userId: userId,
             });
@@ -213,5 +223,5 @@ const likeProjectData = async (projectId, userId) => {
     catch (error) {
         return new errorHandler_1.default(error.message, 500);
     }
-};
+});
 exports.likeProjectData = likeProjectData;

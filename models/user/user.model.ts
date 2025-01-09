@@ -1,5 +1,5 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import * as bcrypt from "bcryptjs"; // Fixed import for bcryptjs
+import * as jwt from "jsonwebtoken"; // Fixed import for jsonwebtoken
 import {
 	Table,
 	Column,
@@ -21,7 +21,7 @@ const emailRegexPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	timestamps: true,
 	modelName: "User",
 })
-export default class User extends Model<User | any> {
+export default class User extends Model<User> {
 	@Column({
 		type: DataType.UUID,
 		primaryKey: true,
@@ -38,6 +38,12 @@ export default class User extends Model<User | any> {
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
+		// validate: {
+		//   isEmail: {
+		//     msg: "Invalid email format",
+		//   },
+		//   is: emailRegexPattern,
+		// },
 	})
 	declare email: string;
 
@@ -76,13 +82,17 @@ export default class User extends Model<User | any> {
 	declare updatedAt: Date;
 
 	@BeforeCreate
-	static hashPassword(instance: User) {
-		instance.password = bcrypt.hashSync(instance.password, 10);
+	static async hashPassword(instance: User) {
+		if (instance.password) {
+			instance.password = await bcrypt.hash(instance.password, 10);
+		}
 	}
 
 	@BeforeUpdate
-	static hashPasswordOnUpdate(instance: User) {
-		instance.password = bcrypt.hashSync(instance.password, 10);
+	static async hashPasswordOnUpdate(instance: User) {
+		if (instance.password) {
+			instance.password = await bcrypt.hash(instance.password, 10);
+		}
 	}
 
 	public SignAccessToken(): string {
@@ -109,7 +119,7 @@ export default class User extends Model<User | any> {
 		);
 	}
 
-	public comparePassword = async (enteredPassword: string) => {
+	public async comparePassword(enteredPassword: string): Promise<boolean> {
 		return await bcrypt.compare(enteredPassword, this.password);
-	};
+	}
 }

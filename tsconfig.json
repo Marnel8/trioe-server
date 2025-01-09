@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2020",                // Modern JavaScript target
+    "target": "es6",                // Modern JavaScript target
     "module": "CommonJS",                // Use ES Modules for `import` syntax
     "outDir": "./dist",                // Output directory for compiled JS
     "rootDir": "./",                   // Root directory for source files
@@ -11,7 +11,8 @@
     "emitDecoratorMetadata": true,     // Required for `sequelize-typescript`
     "experimentalDecorators": true,    // Enable experimental decorators
     "forceConsistentCasingInFileNames": true, // Ensure consistent casing in imports
-    "skipLibCheck": true               // Skip type checking for declaration files
+    "skipLibCheck": true,
+    "resolveJsonModule": true               // Skip type checking for declaration files
   },
   "include": ["index.ts", "**/*.ts"],  // Include all TypeScript files
   "exclude": ["node_modules", "dist"] // Exclude unnecessary directories
