@@ -9,11 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Subscribers = void 0;
+exports.KitInclusion = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
-let Subscribers = class Subscribers extends sequelize_typescript_1.Model {
+let KitInclusion = class KitInclusion extends sequelize_typescript_1.Model {
 };
-exports.Subscribers = Subscribers;
+exports.KitInclusion = KitInclusion;
 __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
@@ -21,23 +21,23 @@ __decorate([
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
     }),
     __metadata("design:type", String)
-], Subscribers.prototype, "id", void 0);
+], KitInclusion.prototype, "id", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.NUMBER, allowNull: false }),
+    __metadata("design:type", Number)
+], KitInclusion.prototype, "quantity", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING, allowNull: false }),
     __metadata("design:type", String)
-], Subscribers.prototype, "email", void 0);
+], KitInclusion.prototype, "name", void 0);
 __decorate([
-    sequelize_typescript_1.CreatedAt,
-    __metadata("design:type", Date)
-], Subscribers.prototype, "createdAt", void 0);
-__decorate([
-    sequelize_typescript_1.UpdatedAt,
-    __metadata("design:type", Date)
-], Subscribers.prototype, "updatedAt", void 0);
-exports.Subscribers = Subscribers = __decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING, allowNull: false }),
+    __metadata("design:type", String)
+], KitInclusion.prototype, "specifications", void 0);
+exports.KitInclusion = KitInclusion = __decorate([
     (0, sequelize_typescript_1.Table)({
-        tableName: "subscribers",
+        tableName: "kit_inclusions",
         timestamps: true,
-        modelName: "subscribers",
+        modelName: "KitInclusion",
     })
-], Subscribers);
+], KitInclusion);

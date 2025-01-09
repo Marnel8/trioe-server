@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
-    "module": "CommonJS",           // Use ESNext for ESM imports
-    "moduleResolution": "node",  // Resolve modules in Node.js style
-    "target": "ES2020",          // Compile to modern JS
-    "strict": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "target": "ES2020",                // Modern JavaScript target
+    "module": "CommonJS",                // Use ES Modules for `import` syntax
+    "outDir": "./dist",                // Output directory for compiled JS
+    "rootDir": "./",                   // Root directory for source files
+    "strict": true,                    // Enable all strict type checking options
+    "moduleResolution": "node",        // Node.js-style module resolution
+    "esModuleInterop": true,           // Enable interop between CommonJS and ES Modules
+    "allowSyntheticDefaultImports": true, // Allow default imports even if module doesn't support it
+    "emitDecoratorMetadata": true,     // Required for `sequelize-typescript`
+    "experimentalDecorators": true,    // Enable experimental decorators
+    "forceConsistentCasingInFileNames": true, // Ensure consistent casing in imports
+    "skipLibCheck": true               // Skip type checking for declaration files
   },
-  "include": ["index.ts", "*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["index.ts", "**/*.ts"],  // Include all TypeScript files
+  "exclude": ["node_modules", "dist"] // Exclude unnecessary directories
 }

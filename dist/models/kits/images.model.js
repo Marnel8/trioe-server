@@ -9,11 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Subscribers = void 0;
+exports.KitImages = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
-let Subscribers = class Subscribers extends sequelize_typescript_1.Model {
+const kit_model_1 = require("./kit.model");
+let KitImages = class KitImages extends sequelize_typescript_1.Model {
 };
-exports.Subscribers = Subscribers;
+exports.KitImages = KitImages;
 __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
@@ -21,23 +22,15 @@ __decorate([
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
     }),
     __metadata("design:type", String)
-], Subscribers.prototype, "id", void 0);
+], KitImages.prototype, "id", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING, allowNull: false }),
     __metadata("design:type", String)
-], Subscribers.prototype, "email", void 0);
+], KitImages.prototype, "imagePath", void 0);
 __decorate([
-    sequelize_typescript_1.CreatedAt,
-    __metadata("design:type", Date)
-], Subscribers.prototype, "createdAt", void 0);
-__decorate([
-    sequelize_typescript_1.UpdatedAt,
-    __metadata("design:type", Date)
-], Subscribers.prototype, "updatedAt", void 0);
-exports.Subscribers = Subscribers = __decorate([
-    (0, sequelize_typescript_1.Table)({
-        tableName: "subscribers",
-        timestamps: true,
-        modelName: "subscribers",
-    })
-], Subscribers);
+    (0, sequelize_typescript_1.BelongsTo)(() => kit_model_1.Kit),
+    __metadata("design:type", kit_model_1.Kit)
+], KitImages.prototype, "kit", void 0);
+exports.KitImages = KitImages = __decorate([
+    (0, sequelize_typescript_1.Table)({ tableName: "kits_images", modelName: "KitsImages" })
+], KitImages);

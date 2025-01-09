@@ -1,35 +1,42 @@
-import ErrorHandler from "../utils/errorHandler";
-import Project from "../models/projects/projects.model";
-import { ProjectInstructions } from "../models/projects/instructions";
-import User from "../models/user/user.model";
-import ProjectLike from "../models/projects/projectLikes";
-export const getProjectsData = async () => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.likeProjectData = exports.deleteProjectData = exports.getProjectByIdData = exports.updateProjectData = exports.getProjectsByUserIdData = exports.createProjectData = exports.getProjectsData = void 0;
+const errorHandler_1 = __importDefault(require("../utils/errorHandler"));
+const projects_model_1 = __importDefault(require("../models/projects/projects.model"));
+const instructions_1 = require("../models/projects/instructions");
+const user_model_1 = __importDefault(require("../models/user/user.model"));
+const projectLikes_1 = __importDefault(require("../models/projects/projectLikes"));
+const getProjectsData = async () => {
     try {
-        const projects = await Project.findAll({
+        const projects = await projects_model_1.default.findAll({
             order: [["createdAt", "DESC"]],
             include: [
-                { model: ProjectInstructions, as: "instructions" },
-                { model: ProjectLike, as: "likes" },
+                { model: instructions_1.ProjectInstructions, as: "instructions" },
+                { model: projectLikes_1.default, as: "likes" },
                 {
-                    model: User,
+                    model: user_model_1.default,
                     as: "author",
                     attributes: ["firstName", "lastName", "email", "id"],
                 },
             ],
         });
-        if (projects instanceof ErrorHandler || !projects) {
-            return new ErrorHandler("Projects not found", 404);
+        if (projects instanceof errorHandler_1.default || !projects) {
+            return new errorHandler_1.default("Projects not found", 404);
         }
         return projects;
     }
     catch (error) {
-        return new ErrorHandler(error.message, 500);
+        return new errorHandler_1.default(error.message, 500);
     }
 };
-export const createProjectData = async (projectData) => {
+exports.getProjectsData = getProjectsData;
+const createProjectData = async (projectData) => {
     try {
         // Create base project
-        const project = await Project.create({
+        const project = await projects_model_1.default.create({
             title: projectData.title,
             category: projectData.category,
             description: projectData.description,
@@ -40,7 +47,7 @@ export const createProjectData = async (projectData) => {
         });
         if (!project) {
             console.error("Failed to create base project");
-            return new ErrorHandler("Failed to create project", 500);
+            return new errorHandler_1.default("Failed to create project", 500);
         }
         // Process instructions with their images
         const instructions = projectData.instructions.map((instruction, index) => ({
@@ -49,13 +56,13 @@ export const createProjectData = async (projectData) => {
             projectId: project.id,
         }));
         // Create instructions
-        const createdInstructions = await ProjectInstructions.bulkCreate(instructions);
+        const createdInstructions = await instructions_1.ProjectInstructions.bulkCreate(instructions);
         // Fetch complete project with instructions
-        const completeProject = await Project.findOne({
+        const completeProject = await projects_model_1.default.findOne({
             where: { id: project.id },
             include: [
                 {
-                    model: ProjectInstructions,
+                    model: instructions_1.ProjectInstructions,
                     as: "instructions",
                 },
             ],
@@ -64,40 +71,42 @@ export const createProjectData = async (projectData) => {
     }
     catch (error) {
         console.error("Data layer error:", error);
-        return new ErrorHandler(error.message, 500);
+        return new errorHandler_1.default(error.message, 500);
     }
 };
-export const getProjectsByUserIdData = async (userId) => {
+exports.createProjectData = createProjectData;
+const getProjectsByUserIdData = async (userId) => {
     try {
-        const projects = await Project.findAll({
+        const projects = await projects_model_1.default.findAll({
             where: {
                 authorId: userId,
             },
         });
-        if (projects instanceof ErrorHandler || !projects) {
-            return new ErrorHandler("Projects not found", 404);
+        if (projects instanceof errorHandler_1.default || !projects) {
+            return new errorHandler_1.default("Projects not found", 404);
         }
         return projects;
     }
     catch (error) {
-        return new ErrorHandler(error.message, 500);
+        return new errorHandler_1.default(error.message, 500);
     }
 };
-export const updateProjectData = async (projectId, projectData) => {
+exports.getProjectsByUserIdData = getProjectsByUserIdData;
+const updateProjectData = async (projectId, projectData) => {
     try {
-        const updatedCount = await Project.update(projectData, {
+        const updatedCount = await projects_model_1.default.update(projectData, {
             where: {
                 id: projectId,
             },
         });
         if (updatedCount[0] === 0) {
             console.error("No project found to update");
-            return new ErrorHandler("Project not found", 404);
+            return new errorHandler_1.default("Project not found", 404);
         }
         // Fetch the updated project
-        const updatedProject = await Project.findOne({
+        const updatedProject = await projects_model_1.default.findOne({
             where: { id: projectId },
-            include: [{ model: ProjectInstructions, as: "instructions" }],
+            include: [{ model: instructions_1.ProjectInstructions, as: "instructions" }],
         });
         console.log("Project updated successfully:", updatedProject);
         // Update instructions if provided
@@ -107,17 +116,17 @@ export const updateProjectData = async (projectId, projectData) => {
                 if (instruction && instruction.id) {
                     console.log(updatedProject);
                     // Update existing instruction
-                    await ProjectInstructions.update({
+                    await instructions_1.ProjectInstructions.update({
                         text: instruction.text,
                         imagePath: instruction.imagePath ||
-                            (await ProjectInstructions?.findOne({
+                            (await instructions_1.ProjectInstructions?.findOne({
                                 where: { id: instruction?.id },
                             }))?.imagePath, // Retain existing image if no new image is provided
                     }, { where: { id: instruction.id, projectId: updatedProject?.id } });
                 }
                 else if (instruction) {
                     // Create new instruction if it doesn't exist
-                    await ProjectInstructions.create({
+                    await instructions_1.ProjectInstructions.create({
                         text: instruction.text,
                         imagePath: instruction.imagePath,
                         projectId: updatedProject?.id,
@@ -129,69 +138,72 @@ export const updateProjectData = async (projectId, projectData) => {
     }
     catch (error) {
         console.error("Data layer error during project update:", error);
-        return new ErrorHandler(error.message, 500);
+        return new errorHandler_1.default(error.message, 500);
     }
 };
-export const getProjectByIdData = async (projectId) => {
+exports.updateProjectData = updateProjectData;
+const getProjectByIdData = async (projectId) => {
     try {
-        const project = await Project.findOne({
+        const project = await projects_model_1.default.findOne({
             where: {
                 id: projectId,
             },
             include: [
-                { model: ProjectInstructions, as: "instructions" },
-                { model: User, as: "author" },
-                { model: ProjectLike, as: "likes" },
+                { model: instructions_1.ProjectInstructions, as: "instructions" },
+                { model: user_model_1.default, as: "author" },
+                { model: projectLikes_1.default, as: "likes" },
             ],
         });
-        if (project instanceof ErrorHandler || !project) {
-            return new ErrorHandler("Project not found", 404);
+        if (project instanceof errorHandler_1.default || !project) {
+            return new errorHandler_1.default("Project not found", 404);
         }
         return project;
     }
     catch (error) {
-        return new ErrorHandler(error.message, 500);
+        return new errorHandler_1.default(error.message, 500);
     }
 };
-export const deleteProjectData = async (projectId) => {
+exports.getProjectByIdData = getProjectByIdData;
+const deleteProjectData = async (projectId) => {
     try {
-        const deletedCount = await Project.destroy({
+        const deletedCount = await projects_model_1.default.destroy({
             where: {
                 id: projectId,
             },
         });
         if (deletedCount === 0) {
-            return new ErrorHandler("Project not found", 404);
+            return new errorHandler_1.default("Project not found", 404);
         }
         return true;
     }
     catch (error) {
-        return new ErrorHandler(error.message, 500);
+        return new errorHandler_1.default(error.message, 500);
     }
 };
-export const likeProjectData = async (projectId, userId) => {
+exports.deleteProjectData = deleteProjectData;
+const likeProjectData = async (projectId, userId) => {
     try {
-        const project = await Project.findOne({
+        const project = await projects_model_1.default.findOne({
             where: { id: projectId },
         });
         if (!project) {
-            return new ErrorHandler("Project not found", 404);
+            return new errorHandler_1.default("Project not found", 404);
         }
-        const projectLikes = await ProjectLike.findAll({
+        const projectLikes = await projectLikes_1.default.findAll({
             where: {
                 projectId: projectId,
             },
         });
         const existingLike = projectLikes.find((like) => like.userId === userId);
         if (existingLike) {
-            await ProjectLike.destroy({
+            await projectLikes_1.default.destroy({
                 where: {
                     id: existingLike.id,
                 },
             });
         }
         else {
-            await ProjectLike.create({
+            await projectLikes_1.default.create({
                 projectId: projectId,
                 userId: userId,
             });
@@ -199,6 +211,7 @@ export const likeProjectData = async (projectId, userId) => {
         return project;
     }
     catch (error) {
-        return new ErrorHandler(error.message, 500);
+        return new errorHandler_1.default(error.message, 500);
     }
 };
+exports.likeProjectData = likeProjectData;

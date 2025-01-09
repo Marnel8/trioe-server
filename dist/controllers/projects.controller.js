@@ -1,7 +1,13 @@
-import catchAsyncErrors from "../middleware/catchAsyncError";
-import ErrorHandler from "../utils/errorHandler";
-import { createProjectData, deleteProjectData, getProjectByIdData, getProjectsByUserIdData, getProjectsData, likeProjectData, updateProjectData, } from "../data/projects";
-export const createProject = catchAsyncErrors(async (req, res, next) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.likeProject = exports.deleteProject = exports.getProjectById = exports.updateProject = exports.getProjectsByUserId = exports.getProjects = exports.createProject = void 0;
+const catchAsyncError_1 = __importDefault(require("../middleware/catchAsyncError"));
+const errorHandler_1 = __importDefault(require("../utils/errorHandler"));
+const projects_1 = require("../data/projects");
+exports.createProject = (0, catchAsyncError_1.default)(async (req, res, next) => {
     const { title, description, category, componentsUsed, instructions } = req.body;
     const files = req.files;
     try {
@@ -12,51 +18,51 @@ export const createProject = catchAsyncErrors(async (req, res, next) => {
             text: instruction.text,
             imagePath: files?.images?.[index]?.filename || null,
         }));
-        const project = await createProjectData({
+        const project = await (0, projects_1.createProjectData)({
             title,
             description,
             category,
             componentsUsed,
             instructions: instructionsWithImages,
-            authorId: req.user.id,
+            authorId: req.user?.id,
             files: files?.images || [],
             demoVideo: files?.video?.[0]?.filename || null,
         });
-        if (project instanceof ErrorHandler || !project) {
-            return next(new ErrorHandler("Failed to create project", 500));
+        if (project instanceof errorHandler_1.default || !project) {
+            return next(new errorHandler_1.default("Failed to create project", 500));
         }
         return res.status(201).json({ success: true, project });
     }
     catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        return next(new errorHandler_1.default(error.message, 500));
     }
 });
-export const getProjects = catchAsyncErrors(async (req, res, next) => {
+exports.getProjects = (0, catchAsyncError_1.default)(async (req, res, next) => {
     try {
-        const projects = await getProjectsData();
-        if (projects instanceof ErrorHandler || !projects) {
-            return next(new ErrorHandler("Projects not found", 404));
+        const projects = await (0, projects_1.getProjectsData)();
+        if (projects instanceof errorHandler_1.default || !projects) {
+            return next(new errorHandler_1.default("Projects not found", 404));
         }
         return res.status(200).json({ success: true, projects });
     }
     catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        return next(new errorHandler_1.default(error.message, 500));
     }
 });
-export const getProjectsByUserId = catchAsyncErrors(async (req, res, next) => {
+exports.getProjectsByUserId = (0, catchAsyncError_1.default)(async (req, res, next) => {
     const userId = req.user.id;
     try {
-        const projects = await getProjectsByUserIdData(userId);
-        if (projects instanceof ErrorHandler || !projects) {
-            return next(new ErrorHandler("Projects not found", 404));
+        const projects = await (0, projects_1.getProjectsByUserIdData)(userId);
+        if (projects instanceof errorHandler_1.default || !projects) {
+            return next(new errorHandler_1.default("Projects not found", 404));
         }
         return res.status(200).json({ success: true, projects });
     }
     catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        return next(new errorHandler_1.default(error.message, 500));
     }
 });
-export const updateProject = catchAsyncErrors(async (req, res, next) => {
+exports.updateProject = (0, catchAsyncError_1.default)(async (req, res, next) => {
     const { id } = req.params;
     const { title, description, category, componentsUsed, instructions } = req.body;
     const files = req.files;
@@ -69,7 +75,7 @@ export const updateProject = catchAsyncErrors(async (req, res, next) => {
             text: instruction.text,
             imagePath: files?.images?.[index]?.filename || null,
         }));
-        const project = await updateProjectData(id, {
+        const project = await (0, projects_1.updateProjectData)(id, {
             title,
             description,
             category,
@@ -77,53 +83,53 @@ export const updateProject = catchAsyncErrors(async (req, res, next) => {
             instructions: instructionsWithImages,
             githubLink: req.body.githubLink,
         });
-        if (project instanceof ErrorHandler || !project) {
-            return next(new ErrorHandler("Failed to update project", 500));
+        if (project instanceof errorHandler_1.default || !project) {
+            return next(new errorHandler_1.default("Failed to update project", 500));
         }
         return res.status(200).json({ success: true, project });
     }
     catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        return next(new errorHandler_1.default(error.message, 500));
     }
 });
-export const getProjectById = catchAsyncErrors(async (req, res, next) => {
+exports.getProjectById = (0, catchAsyncError_1.default)(async (req, res, next) => {
     const { id } = req.params;
     try {
-        const project = await getProjectByIdData(id);
-        if (project instanceof ErrorHandler || !project) {
-            return next(new ErrorHandler("Project not found", 404));
+        const project = await (0, projects_1.getProjectByIdData)(id);
+        if (project instanceof errorHandler_1.default || !project) {
+            return next(new errorHandler_1.default("Project not found", 404));
         }
         return res.status(200).json({ success: true, project });
     }
     catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        return next(new errorHandler_1.default(error.message, 500));
     }
 });
-export const deleteProject = catchAsyncErrors(async (req, res, next) => {
+exports.deleteProject = (0, catchAsyncError_1.default)(async (req, res, next) => {
     const { id } = req.params;
     console.log(id);
     try {
-        const project = await deleteProjectData(id);
-        if (project instanceof ErrorHandler || !project) {
-            return next(new ErrorHandler("Project not found", 404));
+        const project = await (0, projects_1.deleteProjectData)(id);
+        if (project instanceof errorHandler_1.default || !project) {
+            return next(new errorHandler_1.default("Project not found", 404));
         }
         return res.status(200).json({ success: true, project });
     }
     catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        return next(new errorHandler_1.default(error.message, 500));
     }
 });
-export const likeProject = catchAsyncErrors(async (req, res, next) => {
+exports.likeProject = (0, catchAsyncError_1.default)(async (req, res, next) => {
     const { id } = req.params;
     const userId = req.user.id;
     try {
-        const project = await likeProjectData(id, userId);
-        if (project instanceof ErrorHandler || !project) {
-            return next(new ErrorHandler("Project not found", 404));
+        const project = await (0, projects_1.likeProjectData)(id, userId);
+        if (project instanceof errorHandler_1.default || !project) {
+            return next(new errorHandler_1.default("Project not found", 404));
         }
         return res.status(200).json({ success: true, project });
     }
     catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        return next(new errorHandler_1.default(error.message, 500));
     }
 });

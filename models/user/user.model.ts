@@ -21,7 +21,7 @@ const emailRegexPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	timestamps: true,
 	modelName: "User",
 })
-export default class User extends Model {
+export default class User extends Model<User | any> {
 	@Column({
 		type: DataType.UUID,
 		primaryKey: true,

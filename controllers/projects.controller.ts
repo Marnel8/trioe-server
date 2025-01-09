@@ -40,7 +40,7 @@ export const createProject = catchAsyncErrors(
 				category,
 				componentsUsed,
 				instructions: instructionsWithImages,
-				authorId: req.user.id,
+				authorId: req.user?.id,
 				files: files?.images || [],
 				demoVideo: files?.video?.[0]?.filename || null,
 			} as ICreateProjectParams);
