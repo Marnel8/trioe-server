@@ -5,6 +5,9 @@ import cors from "cors";
 import colors from "colors";
 import "./config";
 import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // routes
 import userRoutes from "./routes/user.route";
