@@ -13,6 +13,8 @@ import {
 } from "sequelize-typescript";
 import { Gender, UserRole, UserType } from "./userEnums";
 import Project from "../projects/projects.model";
+import dotenv from "dotenv";
+dotenv.config();
 
 const emailRegexPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -21,7 +23,7 @@ const emailRegexPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	timestamps: true,
 	modelName: "User",
 })
-export default class User extends Model<User> {
+export default class User extends Model {
 	@Column({
 		type: DataType.UUID,
 		primaryKey: true,

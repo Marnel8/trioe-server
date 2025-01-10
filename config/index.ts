@@ -1,11 +1,12 @@
 import { Sequelize } from "sequelize-typescript";
 import User from "../models/user/user.model";
-import colors from "colors";
 import Project from "../models/projects/projects.model";
 import ProjectLike from "../models/projects/projectLikes";
 import { ProjectInstructions } from "../models/projects/instructions";
 import { QuotationReq } from "../models/rfq/QuotationReq";
 import { Subscribers } from "../models/subscribers/subscribers";
+import dotenv from "dotenv";
+dotenv.config();
 
 const sequelize = new Sequelize({
 	database: process.env.DB_NAME,

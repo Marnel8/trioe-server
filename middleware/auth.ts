@@ -5,50 +5,52 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import User from "../models/user/user.model";
 import ErrorHandler from "../utils/errorHandler";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 // Authenticated Users
 export const isAuthenticated = catchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const access_token = req?.cookies.access_token as string;
+	async (req: Request, res: Response, next: NextFunction) => {
+		const access_token = req?.cookies.access_token as string;
 
+		if (!access_token)
+			return next(
+				new ErrorHandler("Please login to access this resource", 401)
+			);
 
-    if (!access_token)
-      return next(
-        new ErrorHandler("Please login to access this resource", 401)
-      );
+		const decoded = jwt.verify(
+			access_token,
+			process.env.ACCESS_TOKEN_SECRET || ""
+		) as JwtPayload;
 
-    const decoded = jwt.verify(
-      access_token,
-      process.env.ACCESS_TOKEN_SECRET || ""
-    ) as JwtPayload;
+		if (!decoded)
+			return next(
+				new ErrorHandler("Access token is not valid. Please try again.", 401)
+			);
 
-    if (!decoded)
-      return next(
-        new ErrorHandler("Access token is not valid. Please try again.", 401)
-      );
+		const user = await User.findOne({ where: { id: decoded.id } });
 
-    const user = await User.findOne({ where: { id: decoded.id } });
+		if (!user) {
+			return next(new ErrorHandler("User not found", 404));
+		}
 
-    if (!user) {
-      return next(new ErrorHandler("User not found", 404));
-    }
+		req.user = user;
 
-    req.user = user;
-
-    next();
-  }
+		next();
+	}
 );
 
 // Validate user roles
 export const authorizeRoles = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (!roles.includes(req?.user.role || "")) {
-      return next(
-        new ErrorHandler(
-          `Role: ${req.user?.role} is not allowed to access this resource`,
-          404
-        )
-      );
-    }
-    next();
-  };
+	return (req: Request, res: Response, next: NextFunction) => {
+		if (!roles.includes(req?.user.role || "")) {
+			return next(
+				new ErrorHandler(
+					`Role: ${req.user?.role} is not allowed to access this resource`,
+					404
+				)
+			);
+		}
+		next();
+	};
 };

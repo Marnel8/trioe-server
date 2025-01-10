@@ -14,13 +14,11 @@ export const createUser = async (userData: CreateUserParams) => {
 		type: userData.type,
 		gender: userData.gender,
 		avatar: userData?.avatar || "",
-	} as User);
+	});
 
 	if (!user) {
 		return new ErrorHandler("Failed to create user", 500);
 	}
-
-	console.log(user);
 
 	return user;
 };
