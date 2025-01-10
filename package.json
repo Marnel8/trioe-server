@@ -33,12 +33,12 @@
 		"reflect-metadata": "^0.2.2",
 		"sequelize": "^6.37.5",
 		"sequelize-typescript": "^2.1.6",
-		"ts-node-dev": "^2.0.0"
+		"ts-node-dev": "^2.0.0",
+		"colors": "^1.4.0"
 	},
 	"devDependencies": {
 		"@types/node": "^22.10.5",
 		"@types/validator": "^13.12.2",
-		"colors": "^1.4.0",
 		"typescript": "^5.7.3"
 	}
 }

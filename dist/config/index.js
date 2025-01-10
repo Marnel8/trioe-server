@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
 const user_model_1 = __importDefault(require("../models/user/user.model"));
-const colors_1 = __importDefault(require("colors"));
 const projects_model_1 = __importDefault(require("../models/projects/projects.model"));
 const projectLikes_1 = __importDefault(require("../models/projects/projectLikes"));
 const instructions_1 = require("../models/projects/instructions");
@@ -30,17 +29,17 @@ const sequelize = new sequelize_typescript_1.Sequelize({
 sequelize
     .authenticate()
     .then(() => {
-    console.log(colors_1.default.cyan(`Connected to the database: ${process.env.DB_NAME}`));
+    console.log(`Connected to the database: ${process.env.DB_NAME}`);
 })
     .catch((error) => {
-    console.error(colors_1.default.red("Unable to connect to the database:"), error);
+    console.error("Unable to connect to the database:", error);
 });
 sequelize
     .sync({ alter: true })
     .then(() => {
-    console.log(colors_1.default.cyan("Database synchronized successfully."));
+    console.log("Database synchronized successfully.");
 })
     .catch((error) => {
-    console.error(colors_1.default.red("Error synchronizing the database:"), error);
+    console.error("Error synchronizing the database:", error);
 });
 exports.default = sequelize;

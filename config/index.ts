@@ -27,21 +27,19 @@ const sequelize = new Sequelize({
 sequelize
 	.authenticate()
 	.then(() => {
-		console.log(
-			colors.cyan(`Connected to the database: ${process.env.DB_NAME}`)
-		);
+		console.log(`Connected to the database: ${process.env.DB_NAME}`);
 	})
 	.catch((error) => {
-		console.error(colors.red("Unable to connect to the database:"), error);
+		console.error("Unable to connect to the database:", error);
 	});
 
 sequelize
 	.sync({ alter: true })
 	.then(() => {
-		console.log(colors.cyan("Database synchronized successfully."));
+		console.log("Database synchronized successfully.");
 	})
 	.catch((error) => {
-		console.error(colors.red("Error synchronizing the database:"), error);
+		console.error("Error synchronizing the database:", error);
 	});
 
 export default sequelize;
