@@ -6,6 +6,7 @@ import colors from "colors";
 import "./config";
 import path from "path";
 import dotenv from "dotenv";
+import logger from "morgan";
 
 dotenv.config();
 
@@ -26,7 +27,7 @@ app.use(cookieParser());
 
 app.use(
 	cors({
-		origin: "https://www.trioe.dev",
+		origin: "http://localhost:3000",
 		credentials: true,
 		methods: ["GET", "POST", "PUT", "DELETE"],
 	})
@@ -38,6 +39,8 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/project", projectRoutes);
 app.use("/api/v1/rfq", rfqRoutes);
 app.use("/api/v1/subscriber", subscriberRoutes);
+
+app.use(logger("dev"));
 
 app.listen(PORT, () => {
 	console.log(colors.cyan(`Trioe Server running on port: ${PORT}`));
