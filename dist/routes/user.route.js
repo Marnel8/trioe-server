@@ -16,4 +16,5 @@ router.post("/", user_controller_1.login);
 router.post("/logout", auth_1.isAuthenticated, user_controller_1.logout);
 // get routes
 router.get("/me", auth_1.isAuthenticated, user_controller_1.getUserDetails);
+router.get("/refresh-token", auth_1.isAuthenticated, user_controller_1.refreshToken);
 exports.default = router;

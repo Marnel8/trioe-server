@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserDetails = exports.logout = exports.login = exports.activateUser = exports.register = void 0;
+exports.refreshToken = exports.getUserDetails = exports.logout = exports.login = exports.activateUser = exports.register = void 0;
 const catchAsyncError_1 = __importDefault(require("../middleware/catchAsyncError"));
 const sendMail_1 = __importDefault(require("../utils/sendMail"));
 const path_1 = __importDefault(require("path"));
 const jwt_1 = require("../utils/jwt");
 const user_service_1 = require("../services/user.service");
 const errorHandler_1 = __importDefault(require("../utils/errorHandler"));
+const user_model_1 = __importDefault(require("../models/user/user.model"));
 const user_1 = require("../data/user");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 exports.register = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -132,6 +133,38 @@ exports.getUserDetails = (0, catchAsyncError_1.default)((req, res, next) => __aw
             return next(new errorHandler_1.default("User not found", 404));
         }
         res.status(200).json(user);
+    }
+    catch (error) {
+        return next(new errorHandler_1.default(error.message, 500));
+    }
+}));
+exports.refreshToken = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const refresh_token = req.cookies.refresh_token;
+        if (!refresh_token) {
+            return next(new errorHandler_1.default("Refresh token is missing", 401));
+        }
+        let decoded;
+        try {
+            decoded = jsonwebtoken_1.default.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET);
+        }
+        catch (error) {
+            return next(new errorHandler_1.default("Invalid or expired refresh token", 401));
+        }
+        const userSession = yield user_model_1.default.findByPk(decoded.id);
+        if (!userSession) {
+            return next(new errorHandler_1.default("User not found", 404));
+        }
+        const accessToken = jsonwebtoken_1.default.sign({ id: userSession.id }, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: "1h",
+        });
+        const refreshToken = jsonwebtoken_1.default.sign({ id: userSession.id }, process.env.REFRESH_TOKEN_SECRET, {
+            expiresIn: "3d",
+        });
+        req.user = userSession;
+        res.cookie("access_token", accessToken, jwt_1.accessTokenOptions);
+        res.cookie("refresh_token", refreshToken, jwt_1.refreshTokenOptions);
+        res.status(200).json({ success: true });
     }
     catch (error) {
         return next(new errorHandler_1.default(error.message, 500));

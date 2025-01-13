@@ -24,7 +24,7 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json({ limit: "50mb" }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, cors_1.default)({
-    origin: "https://www.trioe.dev",
+    origin: "http://localhost:3000",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));

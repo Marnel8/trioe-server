@@ -2,13 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import catchAsyncErrors from "../middleware/catchAsyncError";
 import sendMail from "../utils/sendMail";
 import path from "path";
-import { sendToken } from "../utils/jwt";
+import {
+	accessTokenOptions,
+	refreshTokenOptions,
+	sendToken,
+} from "../utils/jwt";
 import { createActivationToken } from "../services/user.service";
 import ErrorHandler from "../utils/errorHandler";
 import User from "../models/user/user.model";
 import { IActivationRequest } from "../@types/user";
 import { createUser, findUserByEmail, getCurrentUser } from "../data/user";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const register = catchAsyncErrors(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -173,6 +177,60 @@ export const getUserDetails = catchAsyncErrors(
 			}
 
 			res.status(200).json(user);
+		} catch (error: any) {
+			return next(new ErrorHandler(error.message, 500));
+		}
+	}
+);
+
+export const refreshToken = catchAsyncErrors(
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const refresh_token = req.cookies.refresh_token as string;
+
+			if (!refresh_token) {
+				return next(new ErrorHandler("Refresh token is missing", 401));
+			}
+
+			let decoded: JwtPayload;
+
+			try {
+				decoded = jwt.verify(
+					refresh_token,
+					process.env.REFRESH_TOKEN_SECRET as string
+				) as JwtPayload;
+			} catch (error) {
+				return next(new ErrorHandler("Invalid or expired refresh token", 401));
+			}
+
+			const userSession = await User.findByPk(decoded.id);
+
+			if (!userSession) {
+				return next(new ErrorHandler("User not found", 404));
+			}
+
+			const accessToken = jwt.sign(
+				{ id: userSession.id },
+				process.env.ACCESS_TOKEN_SECRET as string,
+				{
+					expiresIn: "1h",
+				}
+			);
+
+			const refreshToken = jwt.sign(
+				{ id: userSession.id },
+				process.env.REFRESH_TOKEN_SECRET as string,
+				{
+					expiresIn: "3d",
+				}
+			);
+
+			req.user = userSession;
+
+			res.cookie("access_token", accessToken, accessTokenOptions);
+			res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+
+			res.status(200).json({ success: true });
 		} catch (error: any) {
 			return next(new ErrorHandler(error.message, 500));
 		}
