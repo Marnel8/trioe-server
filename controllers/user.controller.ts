@@ -13,6 +13,7 @@ import User from "../models/user/user.model";
 import { IActivationRequest } from "../@types/user";
 import { createUser, findUserByEmail, getCurrentUser } from "../data/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import colors from "colors";
 
 export const register = catchAsyncErrors(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -172,7 +173,7 @@ export const getUserDetails = catchAsyncErrors(
 		try {
 			const { access_token } = req.cookies;
 
-			console.log(access_token);
+			console.log(colors.magenta(`access_token: ${access_token}`));
 
 			if (!access_token) {
 				return next(new ErrorHandler("Access token is missing", 401));

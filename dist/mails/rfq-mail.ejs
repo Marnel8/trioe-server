@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>New RFQ Notification</title>
+		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+		</style>
+	</head>
+	<body
+		style="
+			font-family: 'Poppins', Arial, sans-serif;
+			background-color: #f4f4f4;
+			margin: 0;
+			padding: 20px;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		"
+	>
+		<div
+			style="
+				max-width: 600px;
+				margin: 0 auto;
+				background-color: #ffffff;
+				border-radius: 16px;
+				overflow: hidden;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			"
+		>
+			<!-- Header with gradient -->
+			<div
+				style="
+					background: linear-gradient(135deg, #e0f7ff 0%, #87d9ff 100%);
+					padding: 40px 20px;
+					text-align: center;
+				"
+			>
+				<img
+					src="cid:logo"
+					alt="TRIOE Logo"
+					style="
+						width: 120px;
+						height: auto;
+						margin-bottom: 20px;
+						border-radius: 12px;
+						box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+					"
+				/>
+				<h1
+					style="
+						color: #005b82;
+						font-size: 32px;
+						margin: 0;
+						font-weight: 600;
+						letter-spacing: -0.5px;
+					"
+				>
+					New Quotation Request
+				</h1>
+			</div>
+
+			<!-- Content -->
+			<div style="padding: 40px 30px; line-height: 1.6">
+				<p style="font-size: 16px; color: #333; margin-bottom: 25px">
+					A new request for quotation has been submitted with the following
+					details:
+				</p>
+				<table
+					style="
+						width: 100%;
+						border-collapse: collapse; /* Ensures no space between borders */
+						margin-bottom: 25px;
+					"
+				>
+					<tr>
+						<th
+							style="
+								text-align: left;
+								padding: 10px;
+								background-color: #f2f2f2; /* Light background for header */
+								border: 1px solid #ddd; /* Border for table cells */
+							"
+						>
+							Field
+						</th>
+						<th
+							style="
+								text-align: left;
+								padding: 10px;
+								background-color: #f2f2f2;
+								border: 1px solid #ddd;
+							"
+						>
+							Details
+						</th>
+					</tr>
+					<tr>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<strong>First Name:</strong>
+						</td>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<%= rfqData.firstName %>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<strong>Last Name:</strong>
+						</td>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<%= rfqData.lastName %>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<strong>Email:</strong>
+						</td>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<%= rfqData.email %>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<strong>Contact Number:</strong>
+						</td>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<%= rfqData.contactNumber %>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<strong>Organization:</strong>
+						</td>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<%= rfqData.organization %>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<strong>Kit Name:</strong>
+						</td>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<%= rfqData.kitName %>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<strong>Additional Requirements:</strong>
+						</td>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<%= rfqData.additionalRequirements %>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<strong>Quantity:</strong>
+						</td>
+						<td style="padding: 10px; border: 1px solid #ddd">
+							<%= rfqData.quantity %>
+						</td>
+					</tr>
+				</table>
+				<p style="font-size: 14px; color: #666; margin-bottom: 25px">
+					Please review the request and take the necessary actions.
+				</p>
+
+				<!-- Footer -->
+				<div
+					style="
+						border-top: 1px solid #eee;
+						margin-top: 40px;
+						padding-top: 20px;
+						text-align: center;
+					"
+				>
+					<p style="font-size: 12px; color: #999; margin: 0">
+						&copy; 2024 TRIOE. All rights reserved.
+					</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
