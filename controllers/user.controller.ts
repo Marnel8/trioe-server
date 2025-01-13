@@ -170,10 +170,25 @@ export const logout = catchAsyncErrors(
 export const getUserDetails = catchAsyncErrors(
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const user = await getCurrentUser(req);
+			const { access_token } = req.cookies;
+
+			console.log(access_token);
+
+			if (!access_token) {
+				return next(new ErrorHandler("Access token is missing", 401));
+			}
+
+			const decoded = jwt.verify(
+				access_token,
+				process.env.ACCESS_TOKEN_SECRET as string
+			) as JwtPayload;
+
+			if (!decoded) return next(new ErrorHandler("Token is invalid", 401));
+
+			const user = await User.findByPk(decoded.id);
 
 			if (!user) {
-				return next(new ErrorHandler("User not found", 404));
+				return next(new ErrorHandler("User not found", 401));
 			}
 
 			res.status(200).json(user);
