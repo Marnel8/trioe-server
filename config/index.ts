@@ -34,13 +34,13 @@ sequelize
 		console.error("Unable to connect to the database:", error);
 	});
 
-sequelize
-	.sync({ alter: true })
-	.then(() => {
-		console.log("Database synchronized successfully.");
-	})
-	.catch((error) => {
-		console.error("Error synchronizing the database:", error);
-	});
+// sequelize
+// 	.sync({ alter: true })
+// 	.then(() => {
+// 		console.log("Database synchronized successfully.");
+// 	})
+// 	.catch((error) => {
+// 		console.error("Error synchronizing the database:", error);
+// 	});
 
 export default sequelize;
