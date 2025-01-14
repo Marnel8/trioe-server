@@ -173,8 +173,6 @@ export const getUserDetails = catchAsyncErrors(
 		try {
 			const { access_token } = req.cookies;
 
-			console.log(colors.magenta(`access_token: ${access_token}`));
-
 			if (!access_token) {
 				return next(new ErrorHandler("Access token is missing", 401));
 			}
