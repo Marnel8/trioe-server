@@ -26,8 +26,8 @@ app.use(cookieParser());
 
 app.use(
 	cors({
-		// origin: "https://www.trioe.dev",
-		origin: "http://localhost:3000",
+		origin: "https://www.trioe.dev",
+		// origin: "http://localhost:3000",
 		credentials: true,
 		methods: ["GET", "POST", "PUT", "DELETE"],
 	})
