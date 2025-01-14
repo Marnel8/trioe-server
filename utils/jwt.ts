@@ -41,7 +41,8 @@ export const sendToken = (user: User, statusCode: number, res: Response) => {
 
 	if (process.env.NODE_ENV === "production") {
 		accessTokenOptions.secure = true;
-		refreshTokenOptions.secure = true;
+
+		console.log(accessTokenOptions);
 	}
 
 	res.cookie("access_token", accessToken, accessTokenOptions);
