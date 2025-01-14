@@ -16,7 +16,7 @@ interface CookieOptions {
 	expires: Date;
 	maxAge: number;
 	httpOnly: boolean;
-	samesite: string;
+	sameSite: "lax" | "strict" | "none";
 	secure?: boolean; // Add secure as an optional property
 }
 
@@ -25,14 +25,14 @@ export const accessTokenOptions: CookieOptions = {
 	expires: new Date(Date.now() + 60 * 60 * 1000),
 	maxAge: 60 * 60 * 1000,
 	httpOnly: true,
-	samesite: "Lax",
+	sameSite: "lax",
 };
 
 export const refreshTokenOptions: CookieOptions = {
 	expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
 	maxAge: 3 * 24 * 60 * 60 * 1000,
 	httpOnly: true,
-	samesite: "Lax",
+	sameSite: "lax",
 };
 
 export const sendToken = (user: User, statusCode: number, res: Response) => {
@@ -41,16 +41,14 @@ export const sendToken = (user: User, statusCode: number, res: Response) => {
 
 	if (process.env.NODE_ENV === "production") {
 		accessTokenOptions.secure = true;
-
-		console.log(accessTokenOptions);
+		refreshTokenOptions.secure = true;
 	}
-
 	res.cookie("access_token", accessToken, accessTokenOptions);
-	res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+	res.cookie("refresh_token", refreshToken, accessTokenOptions);
 
 	res.status(statusCode).json({
 		success: true,
-		user: JSON.parse(JSON.stringify(user)),
+		user,
 		accessToken,
 	});
 };
