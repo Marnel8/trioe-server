@@ -39,9 +39,10 @@ export const sendToken = (user: User, statusCode: number, res: Response) => {
 	const accessToken = user.SignAccessToken();
 	const refreshToken = user.SignRefreshToken();
 
-	if (process.env.NODE_ENV === "production") {
-		accessTokenOptions.secure = true;
-	}
+	// if (process.env.NODE_ENV === "production") {
+	// 	accessTokenOptions.secure = true;
+	// 	refreshTokenOptions.secure = true;
+	// }
 
 	res.cookie("access_token", accessToken, accessTokenOptions);
 	res.cookie("refresh_token", refreshToken, refreshTokenOptions);
