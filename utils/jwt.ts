@@ -46,11 +46,8 @@ export const sendToken = (user: User, statusCode: number, res: Response) => {
 	res.cookie("access_token", accessToken, accessTokenOptions);
 	res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
-	const role = user.role;
-
 	res.status(statusCode).json({
 		success: true,
-		role,
 		user: JSON.parse(JSON.stringify(user)),
 		accessToken,
 	});
