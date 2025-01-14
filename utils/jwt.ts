@@ -25,14 +25,14 @@ export const accessTokenOptions: CookieOptions = {
 	expires: new Date(Date.now() + 60 * 60 * 1000),
 	maxAge: 60 * 60 * 1000,
 	httpOnly: true,
-	samesite: "lax",
+	samesite: "Lax",
 };
 
 export const refreshTokenOptions: CookieOptions = {
 	expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
 	maxAge: 3 * 24 * 60 * 60 * 1000,
 	httpOnly: true,
-	samesite: "lax",
+	samesite: "Lax",
 };
 
 export const sendToken = (user: User, statusCode: number, res: Response) => {
