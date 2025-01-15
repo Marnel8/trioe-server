@@ -1,5 +1,6 @@
 import { Response } from "express";
 import User from "../models/user/user.model";
+import "dotenv/config";
 
 // parse enviroment variables to integrates with the fallback value
 const accessTokenExpires = parseInt(
@@ -25,14 +26,14 @@ export const accessTokenOptions: CookieOptions = {
 	expires: new Date(Date.now() + 60 * 60 * 1000),
 	maxAge: 60 * 60 * 1000,
 	httpOnly: true,
-	sameSite: "none",
+	sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
 };
 
 export const refreshTokenOptions: CookieOptions = {
 	expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
 	maxAge: 3 * 24 * 60 * 60 * 1000,
 	httpOnly: true,
-	sameSite: "none",
+	sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
 };
 
 export const sendToken = (user: User, statusCode: number, res: Response) => {
