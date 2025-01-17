@@ -5,11 +5,7 @@ import cors from "cors";
 import colors from "colors";
 import "./config";
 import path from "path";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-// routes
+import "dotenv/config";
 import userRoutes from "./routes/user.route";
 import projectRoutes from "./routes/project.route";
 import rfqRoutes from "./routes/rfq.route";
